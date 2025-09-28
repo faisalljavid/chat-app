@@ -216,6 +216,11 @@ async function enterGroup(group) {
     const messages = await apiCall(`/groups/${group.id}/messages`);
     messages.forEach(renderMessage);
     showPage('chat');
+
+    // Auto-scroll to bottom after entering group
+    setTimeout(() => {
+        chatMessages.parentElement.scrollTop = chatMessages.parentElement.scrollHeight;
+    }, 100);
 }
 
 
