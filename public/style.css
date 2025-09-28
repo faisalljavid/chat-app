@@ -183,6 +183,7 @@ h3 {
 .app-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0.75rem 1rem;
     background-color: var(--container-bg);
     border-bottom: 1px solid var(--border-color);
@@ -220,10 +221,7 @@ h3 {
 }
 
 .header-icon-button {
-    background: #F1F1F1;
-    border: 1px solid var(--border-color);
-    width: 40px;
-    height: 40px;
+    border: 1px var(--border-color);
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -237,6 +235,7 @@ h3 {
     border: none;
     font-size: 1rem;
     font-weight: 500;
+    margin-left: 10px;
     color: var(--send-button-bg);
     cursor: pointer;
 }
