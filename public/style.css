@@ -305,14 +305,14 @@ h3 {
 }
 
 .message-sender {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 0.85rem;
     margin: 0 0 0.2rem 0;
 }
 
 .message-content {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
 }
 
 .message-meta {
