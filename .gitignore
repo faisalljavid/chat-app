@@ -190,3 +190,6 @@ Thumbs.db
 # Build outputs
 build/
 dist/
+
+# Uploaded files
+public/uploads/
