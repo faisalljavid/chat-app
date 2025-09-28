@@ -343,9 +343,9 @@ h3 {
 .anonymous-banner {
     text-align: center;
     padding: 0.5rem;
-    background-color: #F1F1F1;
+    /* background-color: #F1F1F1; */
     color: var(--text-color);
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     border-radius: 8px;
     margin-bottom: 0.5rem;
 }
