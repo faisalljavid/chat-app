@@ -27,6 +27,16 @@
                         <label for="password">Password</label>
                         <input type="password" id="password" required>
                     </div>
+                    <div id="profile-picture-section" class="input-group hidden">
+                        <label for="profile-picture">Profile Picture (Optional)</label>
+                        <div class="profile-picture-upload">
+                            <input type="file" id="profile-picture" name="profilePicture" accept="image/*">
+                            <div class="profile-preview">
+                                <img id="profile-preview-img" src="" alt="Profile Preview" class="hidden">
+                                <div id="profile-preview-placeholder">No image selected</div>
+                            </div>
+                        </div>
+                    </div>
                     <p id="error-message" class="error-text"></p>
                     <button type="submit" id="submit-button">Login</button>
                 </form>

@@ -25,7 +25,7 @@ export function setupWebSocket(server) {
                     );
 
                     // 2. Get user info to broadcast with the message
-                    const users = await query('SELECT username FROM users WHERE id = ?', [userId]);
+                    const users = await query('SELECT username, profile_picture_url FROM users WHERE id = ?', [userId]);
                     if (users.length === 0) return; // User not found
 
                     const broadcastMessage = {
@@ -36,6 +36,7 @@ export function setupWebSocket(server) {
                         groupId,
                         isAnonymous,
                         username: users[0].username,
+                        profile_picture_url: users[0].profile_picture_url,
                         timestamp: new Date().toISOString()
                     };
 

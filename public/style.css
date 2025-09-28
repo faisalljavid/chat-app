@@ -443,6 +443,47 @@ h3 {
     cursor: pointer;
 }
 
+/* Profile Picture Upload Styles */
+.profile-picture-upload {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-picture-upload input[type="file"] {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+}
+
+.profile-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+    border: 2px dashed #ddd;
+    border-radius: 50%;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #f9f9f9;
+}
+
+.profile-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#profile-preview-placeholder {
+    color: #999;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
 /* Utility Classes */
 .hidden {
     display: none !important;

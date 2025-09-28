@@ -13,7 +13,8 @@ let pages, authForm, formTitle, submitButton, toggleAuthLink, errorMessage,
     usernameInput, passwordInput, groupsList, createGroupForm, groupNameInput,
     logoutButton, backToGroupsButton, chatGroupName, chatMessages, messageForm,
     messageInput, anonymousToggleButton, anonymousBanner,
-    manageRequestsButton, requestsModal, closeButton, requestsList;
+    manageRequestsButton, requestsModal, closeButton, requestsList,
+    profilePictureSection, profilePictureInput, profilePreviewImg, profilePreviewPlaceholder;
 
 // UI NAVIGATION
 function showPage(pageName) {
@@ -27,6 +28,47 @@ function updateAuthFormUI() {
     toggleAuthLink.textContent = state.isRegistering ? 'Already have an account? Login' : 'Don\'t have an account? Register';
     errorMessage.textContent = '';
     authForm.reset();
+
+    // Show/hide profile picture section based on registration mode
+    if (profilePictureSection) {
+        profilePictureSection.classList.toggle('hidden', !state.isRegistering);
+    }
+}
+
+// PROFILE PICTURE HELPERS
+function handleProfilePicturePreview() {
+    const file = profilePictureInput.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            profilePreviewImg.src = e.target.result;
+            profilePreviewImg.classList.remove('hidden');
+            profilePreviewPlaceholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        profilePreviewImg.classList.add('hidden');
+        profilePreviewPlaceholder.classList.remove('hidden');
+    }
+}
+
+async function uploadProfilePicture(userId, file) {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    formData.append('userId', userId);
+
+    try {
+        const response = await fetch('/api/upload-profile-picture', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message || 'Upload failed');
+        return data.profilePictureUrl;
+    } catch (error) {
+        console.error('Profile picture upload failed:', error);
+        throw error;
+    }
 }
 
 // API HELPERS
@@ -83,9 +125,25 @@ function renderMessage(message) {
     if (!isMine) {
         // Add avatar for others' messages
         const avatar = document.createElement('img');
-        avatar.src = `https://placehold.co/32x32/EAEAEA/333?text=${message.username.charAt(0).toUpperCase()}`;
+        if (message.isAnonymous) {
+            // For anonymous messages, use a generic anonymous avatar
+            avatar.src = 'https://placehold.co/32x32/666666/FFFFFF?text=?';
+        } else if (message.profile_picture_url) {
+            avatar.src = message.profile_picture_url;
+        } else {
+            // For non-anonymous messages without profile picture, use username initial
+            avatar.src = `https://placehold.co/32x32/EAEAEA/333?text=${message.username.charAt(0).toUpperCase()}`;
+        }
         avatar.alt = 'avatar';
         avatar.className = 'avatar';
+        avatar.onerror = () => {
+            // Fallback to default avatar if profile picture fails to load
+            if (message.isAnonymous) {
+                avatar.src = 'https://placehold.co/32x32/666666/FFFFFF?text=?';
+            } else {
+                avatar.src = `https://placehold.co/32x32/EAEAEA/333?text=${message.username.charAt(0).toUpperCase()}`;
+            }
+        };
         wrapper.appendChild(avatar);
 
         const sender = document.createElement('p');
@@ -201,6 +259,10 @@ document.addEventListener('DOMContentLoaded', () => {
     requestsModal = document.getElementById('requests-modal');
     closeButton = document.querySelector('.close-button');
     requestsList = document.getElementById('requests-list');
+    profilePictureSection = document.getElementById('profile-picture-section');
+    profilePictureInput = document.getElementById('profile-picture');
+    profilePreviewImg = document.getElementById('profile-preview-img');
+    profilePreviewPlaceholder = document.getElementById('profile-preview-placeholder');
 
     // ATTACH EVENT LISTENERS
 
@@ -210,6 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateAuthFormUI();
     });
 
+    // Profile picture preview
+    if (profilePictureInput) {
+        profilePictureInput.addEventListener('change', handleProfilePicturePreview);
+    }
+
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const endpoint = state.isRegistering ? '/register' : '/login';
@@ -218,7 +285,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await apiCall(endpoint, 'POST', body);
             state.currentUser = data.user;
             state.isLoggedIn = true;
-            sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+
+            // Handle profile picture upload for registration
+            if (state.isRegistering && profilePictureInput.files[0]) {
+                try {
+                    const profilePictureUrl = await uploadProfilePicture(data.user.id, profilePictureInput.files[0]);
+                    state.currentUser.profile_picture_url = profilePictureUrl;
+                } catch (uploadError) {
+                    console.error('Profile picture upload failed:', uploadError);
+                    // Continue with registration even if profile picture upload fails
+                }
+            }
+
+            sessionStorage.setItem('currentUser', JSON.stringify(state.currentUser));
             initializeApp();
         } catch (error) { /* Handled by apiCall */ }
     });
