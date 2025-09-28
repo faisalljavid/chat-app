@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS chat_app;
+CREATE DATABASE IF NOT EXISTS chat_app_db;
 
-USE chat_app;
+USE chat_app_db;
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
